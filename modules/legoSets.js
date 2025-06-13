@@ -1,50 +1,36 @@
-// Load the Lego data from the JSON files
 const setData = require("../data/setData.json");
 const themeData = require("../data/themeData.json");
 
-// Define the LegoData class
 class LegoData {
-  constructor() {
-    this.sets = [];
-    this.themes = [];
+  initialize() {
+    return new Promise((resolve, reject) => {
+      if (setData.length && themeData.length) {
+        this.sets = setData;
+        this.themes = themeData;
+        resolve();
+      } else {
+        reject("Data not loaded properly.");
+      }
+    });
   }
 
-  // Load data into the class
-  async initialize() {
-    try {
-      this.sets = setData;
-      this.themes = themeData;
-    } catch (err) {
-      throw new Error("Unable to load LEGO data: " + err);
-    }
+  getAllSets() {
+    return Promise.resolve(this.sets);
   }
 
-  // Return all sets, or filtered by theme
-  getAllSets(theme) {
-    if (!theme) {
-      return this.sets;
-    }
-
-    const foundTheme = this.themes.find(
-      (t) => t.name.toLowerCase() === theme.toLowerCase()
-    );
-
-    if (!foundTheme) {
-      throw new Error(`Theme '${theme}' not found.`);
-    }
-
-    return this.sets.filter((set) => set.theme_id === foundTheme.id);
-  }
-
-  // Return a specific set by set_num
   getSetByNum(setNum) {
-    const foundSet = this.sets.find((set) => set.set_num === setNum);
-    if (!foundSet) {
-      throw new Error(`Set '${setNum}' not found.`);
-    }
-    return foundSet;
+    const result = this.sets.find(set => set.set_num === setNum);
+    return result ? Promise.resolve(result) : Promise.reject("Set not found");
   }
+
+  getSetsByTheme(theme) {
+  const filtered = this.sets.filter(set => 
+    typeof set.theme === 'string' && 
+    set.theme.toLowerCase().includes(theme.toLowerCase())
+  );
+  return filtered.length ? Promise.resolve(filtered) : Promise.reject("Theme not found");
 }
 
-// Export the module
+}
+
 module.exports = LegoData;
