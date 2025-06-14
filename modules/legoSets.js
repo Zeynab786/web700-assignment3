@@ -1,4 +1,16 @@
-
+/********************************************************************************
+*  WEB700 – Assignment 03
+* 
+*  I declare that this assignment is my own work in accordance with Seneca's
+*  Academic Integrity Policy:
+* 
+*  https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
+* 
+*  Name: Zeinab Mohamed      Student ID: 123970246      Date: 14th June 2025
+*
+*  Published URL: https://assignment3-l1a5p5n31-zeynab786s-projects.vercel.app 
+*
+********************************************************************************/
 const setData = require("../data/setData");
 const themeData = require("../data/themeData");
 
