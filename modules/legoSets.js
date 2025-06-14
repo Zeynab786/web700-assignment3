@@ -1,36 +1,70 @@
-const setData = require("../data/setData.json");
-const themeData = require("../data/themeData.json");
+
+const setData = require("../data/setData");
+const themeData = require("../data/themeData");
 
 class LegoData {
+  constructor() {
+    this.sets = [];
+  }
+
   initialize() {
     return new Promise((resolve, reject) => {
-      if (setData.length && themeData.length) {
-        this.sets = setData;
-        this.themes = themeData;
+      try {
+        this.sets = [];
+
+        setData.forEach((set) => {
+          const foundtheme = themeData.find((theme) => theme.id === set.theme_id);
+
+          const setWithTheme = {
+            ...set,
+            theme: foundtheme ? foundtheme.name : "Unknown"
+          };
+
+          this.sets.push(setWithTheme);
+        });
+
         resolve();
-      } else {
-        reject("Data not loaded properly.");
+      } catch (err) {
+        reject("Failed to initialize data: " + err);
       }
     });
   }
 
   getAllSets() {
-    return Promise.resolve(this.sets);
+    return new Promise((resolve, reject) => {
+      if (this.sets.length === 0) {
+        reject("sets not available.");
+      } else {
+        resolve(this.sets);
+      }
+    });
   }
 
   getSetByNum(setNum) {
-    const result = this.sets.find(set => set.set_num === setNum);
-    return result ? Promise.resolve(result) : Promise.reject("Set not found");
+    return new Promise((resolve, reject) => {
+      const foundSet = this.sets.find((set) => set.set_num === setNum);
+
+      if (foundSet) {
+        resolve(foundSet);
+      } else {
+        reject("Set not found: " + setNum);
+      }
+    });
   }
 
   getSetsByTheme(theme) {
-  const filtered = this.sets.filter(set => 
-    typeof set.theme === 'string' && 
-    set.theme.toLowerCase().includes(theme.toLowerCase())
-  );
-  return filtered.length ? Promise.resolve(filtered) : Promise.reject("Theme not found");
-}
+    return new Promise((resolve, reject) => {
+      const filteredSets = this.sets.filter((set) =>
+        set.theme.toLowerCase().includes(theme.toLowerCase())
+      );
 
+      if (filteredSets.length > 0) {
+        resolve(filteredSets);
+      } else {
+        reject(`No sets found with theme including: '${theme}'`);
+      }
+    });
+  }
 }
 
 module.exports = LegoData;
